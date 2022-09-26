@@ -1,0 +1,10 @@
+--- a/Crypto/jitterentropy.h	2022-09-25 09:39:24.369394572 +0200
++++ b/Crypto/jitterentropy.h	2022-09-25 09:39:41.254940789 +0200
+@@ -45,6 +45,7 @@
+ #define _JITTERENTROPY_H
+ 
+ #include "jitterentropy-base-user.h"
++#include <sys/types.h>
+ 
+ /* The entropy pool */
+ struct rand_data

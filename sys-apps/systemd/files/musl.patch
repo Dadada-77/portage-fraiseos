@@ -1,0 +1,176 @@
+--- a/src/network/netdev/macsec.c	2022-07-26 16:31:53.877467963 +0000
++++ b/src/network/netdev/macsec.c	2022-07-26 16:32:20.094190093 +0000
+@@ -2,7 +2,7 @@
+ 
+ #include <netinet/in.h>
+ //#include <linux/if_arp.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ #include <linux/if_macsec.h>
+ #include <linux/genetlink.h>
+ 
+--- a/src/network/netdev/bareudp.h	2022-07-26 16:32:50.494254085 +0000
++++ b/src/network/netdev/bareudp.h	2022-07-26 16:33:05.900953044 +0000
+@@ -4,7 +4,7 @@
+ 
+ typedef struct BareUDP BareUDP;
+ 
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ 
+ #include "conf-parser.h"
+ #include "netdev.h"
+--- a/src/basic/socket-util.h	2022-07-26 16:33:28.974334593 +0000
++++ b/src/basic/socket-util.h	2022-07-26 16:33:42.924363653 +0000
+@@ -3,7 +3,7 @@
+ 
+ #include <inttypes.h>
+ #include <linux/netlink.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ #include <linux/if_infiniband.h>
+ #include <linux/if_packet.h>
+ #include <netinet/in.h>
+--- a/src/basic/linux/netdevice.h	2022-07-26 16:33:59.894398914 +0000
++++ b/src/basic/linux/netdevice.h	2022-07-26 16:34:16.501099998 +0000
+@@ -27,7 +27,7 @@
+ #define _UAPI_LINUX_NETDEVICE_H
+ 
+ #include <linux/if.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ #include <linux/if_packet.h>
+ #include <linux/if_link.h>
+ 
+--- a/src/basic/linux/mrp_bridge.h	2022-07-26 16:34:24.014448873 +0000
++++ b/src/basic/linux/mrp_bridge.h	2022-07-26 16:34:33.717802256 +0000
+@@ -4,7 +4,7 @@
+ #define _UAPI_LINUX_MRP_BRIDGE_H_
+ 
+ #include <linux/types.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ 
+ #define MRP_MAX_FRAME_LENGTH		200
+ #define MRP_DEFAULT_PRIO		0x8000
+--- a/src/basic/linux/if_tun.h	2022-07-26 16:34:41.901152477 +0000
++++ b/src/basic/linux/if_tun.h	2022-07-26 16:34:52.621174572 +0000
+@@ -18,7 +18,7 @@
+ #define _UAPI__IF_TUN_H
+ 
+ #include <linux/types.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ #include <linux/filter.h>
+ 
+ /* Read queue size */
+--- a/src/basic/linux/if_bridge.h	2022-07-26 16:35:01.511192869 +0000
++++ b/src/basic/linux/if_bridge.h	2022-07-26 16:35:11.174546058 +0000
+@@ -15,7 +15,7 @@
+ #define _UAPI_LINUX_IF_BRIDGE_H
+ 
+ #include <linux/types.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ #include <linux/in6.h>
+ 
+ #define SYSFS_BRIDGE_ATTR	"bridge"
+--- a/src/basic/linux/if_bonding.h	2022-07-26 16:35:18.421227597 +0000
++++ b/src/basic/linux/if_bonding.h	2022-07-26 16:35:29.854584373 +0000
+@@ -46,7 +46,7 @@
+ 
+ #include <linux/if.h>
+ #include <linux/types.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ 
+ /* userland - kernel ABI version (2003/05/08) */
+ #define BOND_ABI_VERSION 2
+--- a/src/basic/linux/cfm_bridge.h	2022-07-26 16:35:35.661262931 +0000
++++ b/src/basic/linux/cfm_bridge.h	2022-07-26 16:35:47.677954174 +0000
+@@ -4,7 +4,7 @@
+ #define _UAPI_LINUX_CFM_BRIDGE_H_
+ 
+ #include <linux/types.h>
+-#include <linux/if_ether.h>
++#include <netinet/if_ether.h>
+ 
+ #define ETHER_HEADER_LENGTH		(6+6+4+2)
+ #define CFM_MAID_LENGTH			48
+--- a/src/tty-ask-password-agent/tty-ask-password-agent.c	2022-07-26 16:48:54.482844467 +0000
++++ b/src/tty-ask-password-agent/tty-ask-password-agent.c	2022-07-26 16:51:13.033112696 +0000
+@@ -40,7 +40,9 @@
+ #include "string-util.h"
+ #include "strv.h"
+ #include "terminal-util.h"
++#if defined(HAVE_UTMP)
+ #include "utmp-wtmp.h"
++#endif
+ 
+ static enum {
+         ACTION_LIST,
+@@ -225,7 +227,9 @@
+                               pid) < 0)
+                          return log_oom();
+ 
++		  #if defined(HAVE_UTMP)
+                  (void) utmp_wall(wall, NULL, NULL, wall_tty_match, NULL);
++		  #endif
+                  return 0;
+         }
+         case ACTION_QUERY:
+--- a/src/portable/portable.c	2022-07-26 17:01:32.275553553 +0000
++++ b/src/portable/portable.c	2022-07-26 17:01:53.188958077 +0000
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: LGPL-2.1-or-later */
+ 
+ #include <linux/loop.h>
++#include <sys/file.h>
+ 
+ #include "bus-common-errors.h"
+ #include "bus-error.h"
+--- a/src/login/logind-dbus.c	2022-07-26 21:51:44.315324290 +0000
++++ b/src/login/logind-dbus.c	2022-07-26 21:53:22.018476278 +0000
+@@ -55,7 +55,9 @@
+ #include "tmpfile-util.h"
+ #include "unit-name.h"
+ #include "user-util.h"
++#if defined(HAVE_UTMP)
+ #include "utmp-wtmp.h"
++#endif
+ #include "virt.h"
+ 
+ /* As a random fun fact sysvinit had a 252 (256-(strlen(" \r\n")+1))
+@@ -2355,8 +2357,10 @@
+                 }
+ 
+                 username = uid_to_name(uid);
++		#if defined(HAVE_UTMP)
+                 utmp_wall("The system shutdown has been cancelled",
+                           username, tty, logind_wall_tty_filter, m);
++		#endif
+         }
+ 
+         reset_scheduled_shutdown(m);
+--- a/src/login/logind-utmp.c	2022-07-26 21:55:57.491775924 +0000
++++ b/src/login/logind-utmp.c	2022-07-26 21:56:47.485152929 +0000
+@@ -18,7 +18,9 @@
+ #include "strv.h"
+ #include "unit-name.h"
+ #include "user-util.h"
++#if defined(HAVE_UTMP)
+ #include "utmp-wtmp.h"
++#endif
+ 
+ _const_ static usec_t when_wall(usec_t n, usec_t elapse) {
+ 
+@@ -90,7 +92,9 @@
+         }
+ 
+         username = uid_to_name(m->scheduled_shutdown_uid);
++	#if defined(HAVE_UTMP)
+         utmp_wall(l, username, m->scheduled_shutdown_tty, logind_wall_tty_filter, m);
++	#endif
+ 
+         return 1;
+ }

@@ -1,0 +1,12 @@
+--- a/src/audio/base/IOutputDevice.h	2022-07-27 23:21:27.303712764 +0200
++++ b/src/audio/base/IOutputDevice.h	2022-07-27 23:22:09.150015896 +0200
+@@ -3,6 +3,9 @@
+ 
+ #include <string>
+ 
++typedef unsigned int uint;
++
++
+ class IOutputDevice
+ {
+ public:

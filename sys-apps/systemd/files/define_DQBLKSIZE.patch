@@ -1,0 +1,28 @@
+--- a/src/home/homed-home.c	2022-06-10 12:49:44.275750794 +0200
++++ b/src/home/homed-home.c	2022-06-10 12:55:46.201059577 +0200
+@@ -42,6 +42,11 @@
+ #include "user-record.h"
+ #include "user-util.h"
+ 
++#if !defined(__GLIBC__)
++#define QIF_DQBLKSIZE_BITS 10
++#define QIF_DQBLKSIZE (1 << QIF_DQBLKSIZE_BITS)
++#endif
++
+ /* Retry to deactivate home directories again and again every 15s until it works */
+ #define RETRY_DEACTIVATE_USEC (15U * USEC_PER_SEC)
+ 
+--- a/src/home/homework-quota.c	2022-06-10 12:59:21.036458325 +0200
++++ b/src/home/homework-quota.c	2022-06-10 12:59:54.092955907 +0200
+@@ -11,6 +11,11 @@
+ #include "stat-util.h"
+ #include "user-util.h"
+ 
++#if !defined(__GLIBC__)
++#define QIF_DQBLKSIZE_BITS 10
++#define QIF_DQBLKSIZE (1 << QIF_DQBLKSIZE_BITS)
++#endif
++
+ int home_update_quota_btrfs(UserRecord *h, const char *path) {
+         int r;
+ 
